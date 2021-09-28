@@ -1,0 +1,238 @@
+第三章——处理数据
+{
+    'A'与'a'的ASCII码
+    wchar_t,char16_t,char32_t 是什么？
+    运算符优先级
+    字面值和printf，cout之间的输出关系？
+    浮点数的精度问题(整数与浮点数之间的转换精度丢失)
+    运算重载符
+    decimal/hexdecimal/octal
+    Q&A
+    1、为什么C++有多种整形？
+    2、char a =65;和 char b ='A';等价吗？
+}
+
+第四章——复合类型
+{
+    数组//联系->模板类vector和array
+    {
+        数组是一种数据结构
+        数组中的特定元素可以通过索引访问（下标0也叫基索引）
+        所有的数组都是由连续的内存位置组成。最低的地址对应第一个元素，最高的地址对应最后一个元素
+        一个个数据储存在一块块的内存中，而每块内存都对应着一个地址代表这块内存的位置，方便程序员访问
+        数组名储存着数组的首地址，可以通过数组名寻找到数组所在的内存地址，如数组arry[]; 则array存入数组所在的地址
+        (后面会讲到，数组名称不一定代表数组所在的内存地址)
+
+        静态开辟
+        type arrayName [ arraySize ];
+        动态开辟
+        type * array = new type[ arraySize ];
+
+        定义数组的四种方式
+        {
+            double balance[10];//声明数组
+            只声明不初始化如果访问会出现问题
+            double balance[10]={};//初始化为0
+            double balance[5] = {1000.0, 2.0, 3.4, 7.0, 50.0};
+            double balance[5] = {1.0};//后面所有数据都被初始化为0
+            double balance[] = {1000.0, 2.0, 3.4, 7.0, 50.0};//让编译器来计算数组的大小
+            PS：数组的定义不支持缩窄操作！
+        }
+
+        访问数组元素的方式balance[4] = 50.0;//若超出下标，则值不确定
+
+        字符数组
+        {
+            以\结尾
+            char arr[]={};初始化为\0，也就是空字符
+            若不初始化也会出现问题
+            要预留一个位置给\0作为字符串的结尾
+            char arr[]="abcd";
+            若“abc\nd“读进去字符串长度是多少？
+            (字符串的长度比数组长度少)
+            arr[]="abcd\0efg";
+        }
+    }
+
+    字符串
+    {
+        以\0结尾
+        "s"和's'一样吗？若不一样,"s"表示什么？
+        当向一个足够长的字符数组中输入good job时，输出本字符数组会输出什么？
+        ' '在输入中会被当做\0
+        "abc"(表示字符串所在地址)
+        strcmp("abc","bcd");//逐字比较两个字符串中字符的编码大小,若前码小于后码，返回负值,若相等，则等于0
+
+        cin.get(arrayName,arraySize)和cin.getline(arrayName,arraySize)的区别和运用
+        //cin.get()会将/n留在输入流中等待读取，而cin.getline()则会将/n截去
+        //cin.getline()在读取完一行之后就会将有效长度之外的字符截去，cin.get()则不会
+        //getline(cin,str)参数的意义？
+
+        string类
+        可以像数组一样访问string中的字符
+        字符串间的拼接
+        strcat(arrayName,str),strcpy(arrayName,str,(最大字符数)),strlen(str)的使用
+    }
+
+    结构体
+    {
+        //结构体声明
+        struct inflatable
+        {
+            type name1;
+            type name2；
+            ......
+        }
+
+        //新建结构体数组
+        (struct) inflatable name;
+
+        //初始化(不支持缩窄转换!)
+        (struct) inflatable name (=)//'='可选
+        {
+            name1 = xxx，
+            name2 = xxx
+        }
+
+        //为结构体数组中的成员变量赋值
+        name.name1 = xxx;
+        name.name2 = xxx;
+        可以 nameA=nameB//将右边的成员变量值赋给左边'
+    }
+
+    共用体//常用于节省内存
+    {
+        //定义共用体
+        union name
+        {
+            type name1;
+            type name2;
+        };
+        //创建共用体
+        name a;
+        a.name1=xx;
+        a.name2=xx;
+        //同时只能储存一个值
+    }
+
+    枚举
+    {
+        enum name{red,blue,yellow};//从0开始往后递增
+        name a;
+        a=red;
+        枚举没有算术运算符，只有赋值运算符'='
+        枚举值的范围:若最小值大于等于0，则下限为0/若小于0，则下限为小于最小值的最大的2的幂//如最小值-6->下限为-8
+                    上限为大于最大值的最小的2的幂//如最大值127->上限128
+    }
+
+    指针//!!!!!在解引用之前必须确保指针指向了一个已知的、恰当的地址!!!!!
+    {
+        //定义一个指针
+        int* ptr;
+        注意每个指针的定义必须都有*: int*a,b;(定义指针a和整型b)  int*a,*b;(定义指针a和指针b)
+        
+        int* p =(int*)0x0011;//须强转为指针类型
+        
+        int* p =new int;//开辟一块储存int类型数据的(堆区)内存，并将其地址传递给指针p
+
+        //释放指定的内存供程序其他部分使用
+        delete 指针名;//注意：指针并不会被删除，可以继续使用
+
+        动态数组
+        int* a = new arr[100];
+        delete [] a;
+        访问数组中的元素:
+        指针名[下标];
+        指针名可以进行加减运算，将指针左移或右移//注意溢出
+
+        arr[1]<==>*(arr+1)
+
+        sizeof(指针名)->指针大小||sizeof(指针名[0])->数组元素大小
+        虽然说数组名代表了数组所在内存的地址，但当sizeof(arr)时，arr并不代表数组地址...
+        
+        当cout输出一个char*类型的指针时，会输出储存的对应字符串
+        若想输出地址，需要将其转化为int*类型
+
+        注意:'++'优先级高于'*'，使用*pt++时要小心！
+
+        思考：当左移或右移出数组后delete，存放数组的内存还会释放吗？
+
+        1、不要用delete释放不是new分配的内存
+        2、不要释放已经释放过的内存区块，这样做的结果是不确定的
+        3、只能用delete来释放new分配的内存，另外，对空指针使用delete是安全的
+        4、要配对地使用new和delete，否则将发生内存泄漏
+        5、数组的释放方式是delete [] 指针名;
+        6、delete后马上令 p=NULL 可以防止野指针的出现
+        7、在new出的数组中，指针移动后要复位，以便于给delete[]提供正确的地址
+
+        结构体指针
+        须先进行定义
+        创建:
+        inflatable* ps = new inflatable;
+        访问：ps->成员;
+    }
+
+    数组的替代品//后面会详细介绍，这里先简介
+    {
+        以下两者都是对象
+        vector
+        {
+            须包含头文件<vector>,在std命名空间中
+            定义方式：
+            vector<typename>vt(n_elem);//n_elem可以为变量
+        }
+        array
+        {
+            需包含头文件<array>
+            定义方式：
+            array<typename,n_elem>arr;//n_elem不能为变量
+        }
+        数组和array储存位置与vector不同
+        数组必须将元素一一复制到另一数组中，而array则可以直接互相赋值
+        使用array、vector的成员函数at()、begin()、end()可以降低越界概率，会在16章讲到
+    }
+    
+}
+
+第五章———循环和关系表达式
+{
+    ++x中，x先递增，再被使用;x++中，x先被使用，再递减
+    在指针的使用中要注意++*p和*p++的含义('++'运算符的优先级比'*'高)
+    而且*p++是地址往后移而不是解引用之后的数加一!
+
+    在语句块中的变量在语句块被执行完之后会被释放!
+
+    延时循环//while(clock()-strat<end){}
+    {
+        clock()包含在<ctime>头文件下
+        返回程序从开始运行到使用clock()函数时的时间(以系统时间单位为单位)
+        clock()/CLOCKS_PER_SEC;->可以转化为以秒为单位的时间
+        而以秒为单位的时间也可以转为系统单位时间
+        如:
+        float sec;
+        cin >> sec;
+        clock_t end = sec*CLOCKS_PER_SEC;
+        (clock_t 是一种保存时间的类型)
+    }
+
+    类型别名
+    {
+        定义方法:
+        #define BYTE char;//所有的BYTE都替换为char
+        typedef char BYTE;//作用同上
+    }
+
+    基于范围的for循环//C++11新增的一种循环
+    {
+        double arr[10]{};
+        for(double x : arr)
+        cout<<x<<endl;//只读
+        若想修改每个元素的值,需要加上'&'符号
+        for(double &x : arr)
+        {
+            x=0.8*x;
+            cout<<x<<endl;
+        }
+    }
+    
+}
